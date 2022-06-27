@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
 using Microsoft.AspNetCore.Builder;
+
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
@@ -52,6 +53,12 @@ namespace API
 
             services.AddControllers();
 
+            /* 
+                AddCors() enables angular to access our api. Wihout it, an error will happen and you will be sad.
+                Here in the ConfigureServices method, it doesn't matter where you put it.
+            */
+            services.AddCors();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPIv5", Version = "v1" });
@@ -71,6 +78,15 @@ namespace API
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            /* 
+                This enables angular to access our api. Wihout it, an error will happen and you will be sad.
+                Also, here in the Configure method, it must go after UseRouting(), and before UseAuthorization() or UseEndpoints()
+            */
+            app.UseCors(policy => policy
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .WithOrigins("http://localhost:4200"));
 
             app.UseAuthorization();
 
